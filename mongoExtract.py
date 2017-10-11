@@ -9,9 +9,11 @@ db_name = 'test'
 collection_name = 'restaurants'
 table_name = 'Extract'
 extract_name = 'Mongo Collection.tde'
+host = 'localhost'
+port = 27017
 
 ###Creating a connection the the specific collection###
-client = MongoClient()
+client = MongoClient(host, port)
 db = client [db_name]
 collection = db[collection_name]
 
