@@ -2,6 +2,7 @@
 Creating a TDE using the Tableau SDK from a Mongo collection (through pyMongo)
 
 To use this sample script to create a Tableau Data Extract from your MongoDB instance –
+
 •	Import the collection 'primer-dataset.json' to your mongo instance, with the below command (without the < or >)-
 
     mongoimport --db <db-name> --collection <collection-name> --drop --file primer-dataset.json –host <host-name> --port <port-number>
