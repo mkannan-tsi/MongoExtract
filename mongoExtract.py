@@ -131,7 +131,7 @@ try:
 
 		checker = ""
 		list_key = ""
-		##Dealing with nested lists###
+		###Dealing with nested lists###
 		if nested_list:
 			for j in range (len(nested_list)):
 				checker = checker + '\d+.'
@@ -166,12 +166,6 @@ try:
 except:
 	pass
 			
-# print master
-# print len(master)
-# print column_headers
-# print column_types
-client.close()
-
 ###Setting Tableau recognized data types###
 for i in column_types:
 	if i is numpy.int64:
@@ -221,6 +215,7 @@ for i in master:
 		pass
 
 ###Final Procedures###
+client.close()
 dataExtract.close()
 ExtractAPI.cleanup()	
 #####################################################
