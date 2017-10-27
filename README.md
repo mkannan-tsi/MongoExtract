@@ -11,6 +11,7 @@ Prerequisites -
 
 •	Setup the Tableau SDK for Python (https://onlinehelp.tableau.com/current/api/sdk/en-us/help.htm)
 <br /><br />
+
 In case of more than one list, values will be duplicated and an index is provided for traversing through the resulting matrix.
 <br /><br />
 
@@ -25,7 +26,7 @@ More information at https://docs.mongodb.com/getting-started/shell/import-data/
 •	Modify the vital details such as host name, port number, db name, collection name, etc.
 
 •	Run the script
-
+<br /><br />
 
 Acknowledgement -
 
