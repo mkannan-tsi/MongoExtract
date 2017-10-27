@@ -11,9 +11,9 @@ import numpy
 
 ###Defining a few vitals###
 db_name = 'test'
-collection_name = 'achievements'
+collection_name = 'Collection Name'
 table_name = 'Extract'
-extract_name = 'Mongo Collection.tde'
+extract_name = 'Extact Name.tde'
 host = 'localhost'
 port = 27017
 
@@ -131,6 +131,7 @@ try:
 
 		checker = ""
 		list_key = ""
+		
 		###Dealing with nested lists###
 		if nested_list:
 			for j in range (len(nested_list)):
