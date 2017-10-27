@@ -27,3 +27,6 @@ More information at https://docs.mongodb.com/getting-started/shell/import-data/
 •	Run the script
 
 
+Acknowledgement -
+
+Flattening JSON logic taken from https://medium.com/towards-data-science/flattening-json-objects-in-python-f5343c794b10
