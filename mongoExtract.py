@@ -7,11 +7,13 @@ from datetime import date, datetime
 import pandas as pd
 from pandas.io.json import json_normalize
 import re
+import numpy
+
 ###Defining a few vitals###
 db_name = 'test'
-collection_name = 'restaurants'
+collection_name = 'achievements'
 table_name = 'Extract'
-extract_name = 'Mongo Collection 2.tde'
+extract_name = 'Mongo Collection.tde'
 host = 'localhost'
 port = 27017
 
@@ -57,108 +59,166 @@ def manipulate (j):
 		return (j)
 
 master = []
-for i in collection.find (limit=1000):
-	nested_list_temp = []
-	nested_dict_temp = []
-	nested_dict = []
-	nested_list = []
-	flattened_columns = []
+try:
+	for i in collection.find (limit=10):
+		nested_list_temp = []
+		nested_dict_temp = []
+		nested_dict = []
+		nested_list = []
+		flattened_columns = []
 
-	a = flatten_json (i)
-	df = json_normalize (a)
+		a = flatten_json (i)
+		df = json_normalize (a)
 
-	###Manipulating nested dicts###
-	for j in nested_dict_temp:
-		nested_dict.append (manipulate(j))
-	nested_dict = list (set (nested_dict))
+		###Manipulating nested dicts###
+		for j in nested_dict_temp:
+			nested_dict.append (manipulate(j))
+		nested_dict = list (set (nested_dict))
 
-	###Manipulating nested lists###
-	for j in nested_list_temp:
-		nested_list.append (manipulate (j))
-	nested_list = list (set (nested_list))
+		###Manipulating nested lists###
+		for j in nested_list_temp:
+			nested_list.append (manipulate (j))
+		nested_list = list (set (nested_list))
 
-	###Manipulating column headers to match###
-	columns = {}
-	for j in df.columns.values:
-		a = [(m.start(0), m.end(0)) for m in re.finditer(".\d+", j)]
-		if a:
-			s = ""
-			o = ""
-			start = 0
-			for i in a:
-				pos_start = i[0] + 1
-				pos_end = i[1] + 1
-				s = s + j[start:pos_start]
-				o = o + j[pos_start-1:pos_end-1]
-				start = pos_end
-			if re.search (".\d+$", j):
-				s = s[:-1]
-			else:
-				s = s + j[pos_end:len(j)]
-			s = s + o
-			columns[j] = s
-	df = df.rename(columns=columns)
+		###Manipulating column headers to match###
+		columns = {}
+		for j in df.columns.values:
+			a = [(m.start(0), m.end(0)) for m in re.finditer(".\d+", j)]
+			if a:
+				s = ""
+				o = ""
+				start = 0
+				for i in a:
+					pos_start = i[0] + 1
+					pos_end = i[1] + 1
+					s = s + j[start:pos_start]
+					o = o + j[pos_start-1:pos_end-1]
+					start = pos_end
+				if re.search (".\d+$", j):
+					s = s[:-1]
+				else:
+					s = s + j[pos_end:len(j)]
+				s = s + o
+				columns[j] = s
+		df = df.rename(columns=columns)
 
-	###Determining the columns that are flat post manipulation###
-	for j in df.columns.values:
-		if re.search (".\d+", j) is None:
-			flattened_columns.append (j)	
+		###Determining the columns that are flat post manipulation###
+		for j in df.columns.values:
+			if re.search (".\d+", j) is None:
+				flattened_columns.append (j)	
 
-	###Dealing with nested dicts###
-	if nested_dict:
-		stubnames = []
-		for j in nested_dict:
-			for k in df.columns.values:
-				if re.search ((j+"\w+.\d+$"), k) is not None:
-					a = [(m.start(0), m.end(0)) for m in re.finditer(".\d+", k)]
-					start = a[-1][0] + 1
-					end = a[-1][1]
-					stubnames.append (k[:(start-end)])
-					
-		stubnames = list(set(stubnames))
-		if stubnames:
-			df = pd.wide_to_long (df, stubnames=stubnames,  i=flattened_columns, j='key')
-			df = df.reset_index()
-			df = df.drop('key', axis=1)
-			for k in stubnames:
-				flattened_columns.append (k)
+		###Dealing with nested dicts###
+		if nested_dict:
+			stubnames = []
+			for j in nested_dict:
+				for k in df.columns.values:
+					if re.search ((j+"\w+.\d+$"), k) is not None:
+						a = [(m.start(0), m.end(0)) for m in re.finditer(".\d+", k)]
+						start = a[-1][0] + 1
+						end = a[-1][1]
+						stubnames.append (k[:(start-end)])
+						
+			stubnames = list(set(stubnames))
+			if stubnames:
+				df = pd.wide_to_long (df, stubnames=stubnames,  i=flattened_columns, j='key')
+				df = df.reset_index()
+				df = df.drop('key', axis=1)
+				for k in stubnames:
+					flattened_columns.append (k)
 
-	checker = ""
-	list_key = ""
-	##Dealing with nested lists###
-	if nested_list:
-		for j in range (len(nested_list)):
-			checker = checker + '\d+.'
-			list_key = list_key + nested_list[j]
-		list_key = list_key + 'key'
-		checker = checker [:-1]
-
-		df = pd.wide_to_long (df, stubnames=nested_list, i=flattened_columns, j=list_key)
-		df = df.reset_index()
-		for j in nested_list:
-			flattened_columns.append (j)
-			flattened_columns.append (list_key)
-	
-
-	###Consolidating into master list, and removing duplicates in case of nested lists###
-	for j in range(0, len(df)):
-		flag = 0
+		checker = ""
+		list_key = ""
+		##Dealing with nested lists###
 		if nested_list:
-			if df[list_key][j]:
-				if re.search (checker, df[list_key][j]) is None:
-					flag = 1
+			for j in range (len(nested_list)):
+				checker = checker + '\d+.'
+				list_key = list_key + nested_list[j]
+			list_key = list_key + 'key'
+			checker = checker [:-1]
 
-		if flag == 0:
-			series1=df.iloc[j,:]
-			master.append (series1.to_dict())	
+			df = pd.wide_to_long (df, stubnames=nested_list, i=flattened_columns, j=list_key)
+			df = df.reset_index()
+			for j in nested_list:
+				flattened_columns.append (j)
+				flattened_columns.append (list_key)
+		
 
-	###Creating column headers###
-	for j in df.columns.values:
-		if j not in column_headers:
-			column_headers.append (j)
-			column_types.append (type (df.loc [0,j]))
+		###Consolidating into master list, and removing duplicates in case of nested lists###
+		for j in range(0, len(df)):
+			flag = 0
+			if nested_list:
+				if df[list_key][j]:
+					if re.search (checker, df[list_key][j]) is None:
+						flag = 1
+
+			if flag == 0:
+				series1=df.iloc[j,:]
+				master.append (series1.to_dict())	
+
+		###Creating column headers###
+		for j in df.columns.values:
+			if j not in column_headers and j != "_id":
+				column_headers.append (j)
+				column_types.append (type (df.loc [0,j]))
+except:
+	pass
 			
-print master
-print len(master)
-print column_headers
-print column_types
+# print master
+# print len(master)
+# print column_headers
+# print column_types
+client.close()
+
+###Setting Tableau recognized data types###
+column_headers_types = []
+for i in column_types:
+	if i is numpy.int64:
+		column_headers_types.append (Type.INTEGER)
+	elif i is numpy.float64:
+		column_headers_types.append (Type.DOUBLE)
+	elif i is pd.Timestamp:
+		column_headers_types.append (Type.DATETIME)	
+	else:
+		column_headers_types.append (Type.UNICODE_STRING)
+
+###Initializng the Extract API, and applying the schema to the table###
+ExtractAPI.initialize()
+dataExtract = Extract(extract_name)
+dataSchema = TableDefinition()
+for i in range(0, (len(column_headers))):
+	dataSchema.addColumn (column_headers[i], column_headers_types[i])
+table = dataExtract.addTable(table_name, dataSchema)
+
+###Adding data to the extract###
+newRow = Row(dataSchema)
+for i in master:
+	try:
+		for j in range(len(column_headers)):
+			if column_headers_types[j] == 7:
+				try:
+					newRow.setInteger (j, i.get(column_headers[j]))
+				except:
+					newRow.setNull (j)
+			elif column_headers_types[j] == 13:
+				try:
+					newRow.setDateTime (j, i.get(column_headers[j]).year, i.get(column_headers[j]).month, i.get(column_headers[j]).day, i.get(column_headers[j]).hour, i.get(column_headers[j]).minute, i.get(column_headers[j]).second, 0)
+				except:
+					newRow.setNull (j)
+			elif column_headers_types[j] == 10:
+				try:
+					newRow.setDouble (j, i.get(column_headers[j]))
+				except:
+					newRow.setNull (j)
+			else:
+				try:
+					newRow.setString (j, i.get(column_headers[j]))
+				except:
+					newRow.setNull (j)
+		table.insert(newRow)
+	except:
+		pass
+
+###Final Procedures###
+dataExtract.close()
+ExtractAPI.cleanup()	
+#####################################################
