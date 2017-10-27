@@ -5,10 +5,13 @@ To use this tool, point it to a collection in your MongoDB instance. It should a
 
 Prerequisites -
 •	Install pyMongo (https://api.mongodb.com/python/current/)
+
 •   Install the following ackages - pandas, numpy
+
 •	Setup the Tableau SDK for Python (https://onlinehelp.tableau.com/current/api/sdk/en-us/help.htm)
 
 To try a sample -
+
 •	Import the collection 'primer-dataset.json' to your mongo instance, with the below command (without the < or >)-
 
     mongoimport --db <db-name> --collection <collection-name> --drop --file primer-dataset.json –host <host-name> --port <port-number>
