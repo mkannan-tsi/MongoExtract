@@ -61,7 +61,7 @@ def manipulate (j):
 
 master = []
 try:
-	for i in collection.find (limit=10):
+	for i in collection.find ():
 		nested_list_temp = []
 		nested_dict_temp = []
 		nested_dict = []
