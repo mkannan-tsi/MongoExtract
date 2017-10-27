@@ -23,6 +23,7 @@ db = client [db_name]
 collection = db[collection_name]
 column_headers = []
 column_types = []
+column_headers_types = []
 
 def flatten_json(y):
     out = {}
@@ -66,9 +67,11 @@ try:
 		nested_dict = []
 		nested_list = []
 		flattened_columns = []
-
-		a = flatten_json (i)
-		df = json_normalize (a)
+		try:
+			json = flatten_json (i)
+			df = json_normalize (json)
+		except:
+			pass
 
 		###Manipulating nested dicts###
 		for j in nested_dict_temp:
@@ -85,21 +88,21 @@ try:
 		for j in df.columns.values:
 			a = [(m.start(0), m.end(0)) for m in re.finditer(".\d+", j)]
 			if a:
-				s = ""
-				o = ""
+				words = ""
+				digits = ""
 				start = 0
 				for i in a:
 					pos_start = i[0] + 1
 					pos_end = i[1] + 1
-					s = s + j[start:pos_start]
-					o = o + j[pos_start-1:pos_end-1]
+					words = words + j[start:pos_start]
+					digits = digits + j[pos_start-1:pos_end-1]
 					start = pos_end
 				if re.search (".\d+$", j):
-					s = s[:-1]
+					words = words[:-1]
 				else:
-					s = s + j[pos_end:len(j)]
-				s = s + o
-				columns[j] = s
+					words = words + j[pos_end:len(j)]
+				title = words + digits
+				columns[j] = title
 		df = df.rename(columns=columns)
 
 		###Determining the columns that are flat post manipulation###
@@ -170,7 +173,6 @@ except:
 client.close()
 
 ###Setting Tableau recognized data types###
-column_headers_types = []
 for i in column_types:
 	if i is numpy.int64:
 		column_headers_types.append (Type.INTEGER)
