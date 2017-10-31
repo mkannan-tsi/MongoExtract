@@ -11,9 +11,9 @@ import numpy
 
 ###Defining a few vitals###
 db_name = 'test'
-collection_name = 'Collection Name'
+collection_name = 'achievements'
 table_name = 'Extract'
-extract_name = 'Extact Name.tde'
+extract_name = 'Mongo Collection.tde'
 host = 'localhost'
 port = 27017
 
@@ -61,7 +61,7 @@ def manipulate (j):
 
 master = []
 try:
-	for i in collection.find ():
+	for i in collection.find (limit=10):
 		nested_list_temp = []
 		nested_dict_temp = []
 		nested_dict = []
@@ -131,7 +131,6 @@ try:
 
 		checker = ""
 		list_key = ""
-		
 		###Dealing with nested lists###
 		if nested_list:
 			for j in range (len(nested_list)):
@@ -177,6 +176,15 @@ for i in column_types:
 		column_headers_types.append (Type.DATETIME)	
 	else:
 		column_headers_types.append (Type.UNICODE_STRING)
+
+###Removing extract if it already exists (for full refresh)###
+try:
+	cwd = os.getcwd()
+	for f in os.listdir(cwd):
+		if re.search(extract_name, f):
+			os.remove(os.path.join(cwd, f))
+except OSError, e:
+	pass
 
 ###Initializng the Extract API, and applying the schema to the table###
 ExtractAPI.initialize()
