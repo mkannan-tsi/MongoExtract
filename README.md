@@ -29,7 +29,8 @@ More information at https://docs.mongodb.com/getting-started/shell/import-data/
 <br /><br />
 
 Notes - 
-•	In case of incremental extract, the filter can be added when querying the database using collection.find (line 65), for which syntax       can be found here (http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.find).
+
+•	In case of incremental extract, the filter can be added when querying the database using collection.find (line 65), for which syntax  can be found at http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.find.
 <br /><br />
 
 Acknowledgement -
