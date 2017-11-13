@@ -12,7 +12,11 @@ Prerequisites -
 •	Setup the Tableau SDK for Python (https://onlinehelp.tableau.com/current/api/sdk/en-us/help.htm)
 <br /><br />
 
-In case of more than one list, rows will be duplicated and an index is provided for traversing through the resulting matrix.
+Notes - 
+
+•	In case of incremental extract, the filter can be added when querying the database using collection.find (line 65), for which syntax  can be found at http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.find.
+
+•	In case of more than one list, rows will be duplicated and an index is provided for traversing through the resulting matrix.
 <br /><br />
 
 To try a sample -
@@ -26,11 +30,6 @@ More information at https://docs.mongodb.com/getting-started/shell/import-data/
 •	Modify the vital details such as host name, port number, db name, collection name, etc.
 
 •	Run the script
-<br /><br />
-
-Notes - 
-
-•	In case of incremental extract, the filter can be added when querying the database using collection.find (line 65), for which syntax  can be found at http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.find.
 <br /><br />
 
 Acknowledgement -
