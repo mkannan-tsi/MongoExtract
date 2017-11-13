@@ -16,6 +16,7 @@ table_name = 'Extract'
 extract_name = 'Mongo Collection.tde'
 host = 'localhost'
 port = 27017
+incremental_refresh = 0 #Full refresh is 0, while incremental refresh is 1.
 
 ###Creating a connection the the specific collection###
 client = MongoClient(host, port)
@@ -61,7 +62,7 @@ def manipulate (j):
 
 master = []
 try:
-	for i in collection.find (limit=10):
+	for i in collection.find ():
 		nested_list_temp = []
 		nested_dict_temp = []
 		nested_dict = []
@@ -177,22 +178,30 @@ for i in column_types:
 	else:
 		column_headers_types.append (Type.UNICODE_STRING)
 
-###Removing extract if it already exists (for full refresh)###
-try:
-	cwd = os.getcwd()
-	for f in os.listdir(cwd):
-		if re.search(extract_name, f):
-			os.remove(os.path.join(cwd, f))
-except OSError, e:
-	pass
+###Getting the existing table schema for incremental refresh###
+if incremental_refresh == 1:
+	dataExtract = Extract(extract_name)
+	if dataExtract.hasTable('Extract'):
+	    table = dataExtract.openTable('Extract')
+	    dataSchema = table.getTableDefinition()
 
-###Initializng the Extract API, and applying the schema to the table###
-ExtractAPI.initialize()
-dataExtract = Extract(extract_name)
-dataSchema = TableDefinition()
-for i in range(0, (len(column_headers))):
-	dataSchema.addColumn (column_headers[i], column_headers_types[i])
-table = dataExtract.addTable(table_name, dataSchema)
+else:
+	###Removing extract if it already exists (for full refresh)###
+	try:
+		cwd = os.getcwd()
+		for f in os.listdir(cwd):
+			if re.search(extract_name, f):
+				os.remove(os.path.join(cwd, f))
+	except OSError, e:
+		pass
+
+	###Initializng the Extract API, and applying the schema to the table###
+	ExtractAPI.initialize()
+	dataExtract = Extract(extract_name)
+	dataSchema = TableDefinition()
+	for i in range(0, (len(column_headers))):
+		dataSchema.addColumn (column_headers[i], column_headers_types[i])
+	table = dataExtract.addTable(table_name, dataSchema)
 
 ###Adding data to the extract###
 newRow = Row(dataSchema)
