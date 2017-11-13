@@ -28,6 +28,10 @@ More information at https://docs.mongodb.com/getting-started/shell/import-data/
 •	Run the script
 <br /><br />
 
+Notes - 
+•	In case of incremental extract, the filter can be added when querying the database using collection.find (line 65), for which syntax       can be found here (http://api.mongodb.com/python/current/api/pymongo/collection.html#pymongo.collection.Collection.find).
+<br /><br />
+
 Acknowledgement -
 
 Flattening JSON logic taken from https://medium.com/towards-data-science/flattening-json-objects-in-python-f5343c794b10
