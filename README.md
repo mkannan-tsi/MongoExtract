@@ -3,6 +3,8 @@ Create a TDE using the Tableau SDK from a Mongo collection (through pyMongo)
 <br />
 To use this tool, point it to a collection in your MongoDB instance. It should automatically pick up columns and nested elements such as lists and dictionaries, and flatten them out to create a Tableau Data Extract that can be used for analysis on Tableau.
 <br /><br />
+Blog - https://medium.com/@kannanmadhav/creating-tableau-extracts-from-mongodb-data-fb4887fc5d49
+<br /><br />
 Prerequisites -
 
 •	Install pyMongo (https://api.mongodb.com/python/current/)
