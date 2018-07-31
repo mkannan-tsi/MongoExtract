@@ -11,12 +11,12 @@ import numpy
 
 ###Defining a few vitals###
 db_name = 'test'
-collection_name = 'achievements'
+collection_name = 'restaurants'
 table_name = 'Extract'
 extract_name = 'Mongo Collection.tde'
 host = 'localhost'
 port = 27017
-incremental_refresh = 0 #Full refresh is 0, while incremental refresh is 1.
+incremental_refresh = 0 #Full refresh is 0, while incremental refresh is 1
 
 ###Creating a connection the the specific collection###
 client = MongoClient(host, port)
@@ -146,13 +146,12 @@ try:
 				flattened_columns.append (j)
 				flattened_columns.append (list_key)
 		
-
 		###Consolidating into master list, and removing duplicates in case of nested lists###
 		for j in range(0, len(df)):
 			flag = 0
 			if nested_list:
 				if df[list_key][j]:
-					if re.search (checker, df[list_key][j]) is None:
+					if re.search (checker, str(df[list_key][j])) is None:
 						flag = 1
 
 			if flag == 0:
@@ -166,7 +165,7 @@ try:
 				column_types.append (type (df.loc [0,j]))
 except:
 	pass
-			
+
 ###Setting Tableau recognized data types###
 for i in column_types:
 	if i is numpy.int64:
@@ -177,6 +176,7 @@ for i in column_types:
 		column_headers_types.append (Type.DATETIME)	
 	else:
 		column_headers_types.append (Type.UNICODE_STRING)
+
 
 ###Getting the existing table schema for incremental refresh###
 if incremental_refresh == 1:
@@ -202,6 +202,8 @@ else:
 	for i in range(0, (len(column_headers))):
 		dataSchema.addColumn (column_headers[i], column_headers_types[i])
 	table = dataExtract.addTable(table_name, dataSchema)
+
+
 
 ###Adding data to the extract###
 newRow = Row(dataSchema)
