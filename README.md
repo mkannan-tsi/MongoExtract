@@ -25,7 +25,7 @@ To try a sample -
 
 •	Import the collection 'primer-dataset.json' to your mongo instance, with the below command (without the < or >)-
 
-    mongoimport --db <db-name> --collection <collection-name> --drop --file primer-dataset.json –host <host-name> --port <port-number>
+    mongoimport --db <db-name> --collection <collection-name> --drop --file primer-dataset.json –-host <host-name> --port <port-number>
 
 More information at https://docs.mongodb.com/getting-started/shell/import-data/
 
